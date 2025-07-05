@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/note.dart';
 import '../services/notes_provider.dart';
 import '../widgets/note_tile.dart';
+import 'edit_note_screen.dart';
 
 class NotesListScreen extends StatefulWidget {
   const NotesListScreen({super.key});
@@ -18,6 +20,12 @@ class _NotesListScreenState extends State<NotesListScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NotesProvider>().load();
     });
+  }
+
+  void _openEditor([Note? note]) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => EditNoteScreen(note: note)),
+    );
   }
 
   @override
@@ -36,12 +44,12 @@ class _NotesListScreenState extends State<NotesListScreen> {
                   background: Container(color: Colors.red),
                   direction: DismissDirection.endToStart,
                   onDismissed: (_) => provider.remove(n.id),
-                  child: NoteTile(note: n, onTap: () {}),
+                  child: NoteTile(note: n, onTap: () => _openEditor(n)),
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => _openEditor(),
         child: const Icon(Icons.add),
       ),
     );
