@@ -41,7 +41,12 @@ class _NotesListScreenState extends State<NotesListScreen> {
                 final n = provider.notes[i];
                 return Dismissible(
                   key: ValueKey(n.id),
-                  background: Container(color: Colors.red),
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 16),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
                   direction: DismissDirection.endToStart,
                   onDismissed: (_) => provider.remove(n.id),
                   child: NoteTile(note: n, onTap: () => _openEditor(n)),
