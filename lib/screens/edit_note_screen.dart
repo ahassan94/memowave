@@ -15,12 +15,16 @@ class EditNoteScreen extends StatefulWidget {
 class _EditNoteScreenState extends State<EditNoteScreen> {
   late TextEditingController _title;
   late TextEditingController _body;
+  late String _category;
+
+  static const _categories = ['General', 'Work', 'Personal', 'Ideas', 'To-do'];
 
   @override
   void initState() {
     super.initState();
     _title = TextEditingController(text: widget.note?.title ?? '');
     _body = TextEditingController(text: widget.note?.body ?? '');
+    _category = widget.note?.category ?? 'General';
   }
 
   @override
@@ -39,9 +43,13 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     }
     final provider = context.read<NotesProvider>();
     if (widget.note == null) {
-      provider.add(Note(title: title, body: body));
+      provider.add(Note(title: title, body: body, category: _category));
     } else {
-      provider.update(widget.note!.copyWith(title: title, body: body));
+      provider.update(widget.note!.copyWith(
+        title: title,
+        body: body,
+        category: _category,
+      ));
     }
     Navigator.pop(context);
   }
@@ -62,8 +70,20 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           children: [
             TextField(
               controller: _title,
-              decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
+              decoration: const InputDecoration(
+                hintText: 'Title',
+                border: InputBorder.none,
+              ),
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            DropdownButton<String>(
+              value: _category,
+              isExpanded: true,
+              items: _categories
+                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                  .toList(),
+              onChanged: (v) => setState(() => _category = v ?? 'General'),
             ),
             const SizedBox(height: 8),
             Expanded(

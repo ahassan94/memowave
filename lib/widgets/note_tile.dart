@@ -18,7 +18,11 @@ class NoteTile extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: Text(preview, maxLines: 2, overflow: TextOverflow.ellipsis),
+      subtitle: Text(
+        '[${note.category}] $preview',
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
       trailing: Text(date, style: const TextStyle(fontSize: 11, color: Colors.grey)),
       onTap: onTap,
     );
