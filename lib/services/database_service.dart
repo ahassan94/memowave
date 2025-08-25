@@ -9,7 +9,7 @@ class DatabaseService {
 
   static Database? _db;
   static const _dbName = 'memowave.db';
-  static const _dbVersion = 1;
+  static const _dbVersion = 2;
 
   Future<Database> get database async {
     if (_db != null) return _db!;
@@ -20,7 +20,12 @@ class DatabaseService {
   Future<Database> _open() async {
     final dir = await getDatabasesPath();
     final path = p.join(dir, _dbName);
-    return openDatabase(path, version: _dbVersion, onCreate: _onCreate);
+    return openDatabase(
+      path,
+      version: _dbVersion,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -29,11 +34,18 @@ class DatabaseService {
         id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         body TEXT NOT NULL,
+        category TEXT NOT NULL DEFAULT 'General',
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL
       )
     ''');
     await db.execute('CREATE INDEX idx_notes_updated ON notes(updated_at DESC)');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldV, int newV) async {
+    if (oldV < 2) {
+      await db.execute("ALTER TABLE notes ADD COLUMN category TEXT NOT NULL DEFAULT 'General'");
+    }
   }
 
   Future<List<Note>> getAll() async {
@@ -50,6 +62,23 @@ class DatabaseService {
       [q, q],
     );
     return rows.map(Note.fromMap).toList();
+  }
+
+  Future<List<Note>> byCategory(String category) async {
+    final db = await database;
+    final rows = await db.query(
+      'notes',
+      where: 'category = ?',
+      whereArgs: [category],
+      orderBy: 'updated_at DESC',
+    );
+    return rows.map(Note.fromMap).toList();
+  }
+
+  Future<List<String>> categories() async {
+    final db = await database;
+    final rows = await db.rawQuery('SELECT DISTINCT category FROM notes ORDER BY category');
+    return rows.map((r) => r['category'] as String).toList();
   }
 
   Future<void> insert(Note note) async {
