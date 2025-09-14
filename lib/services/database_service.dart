@@ -56,9 +56,9 @@ class DatabaseService {
 
   Future<List<Note>> search(String query) async {
     final db = await database;
-    final q = '%$query%';
+    final q = '%${query.toLowerCase()}%';
     final rows = await db.rawQuery(
-      'SELECT * FROM notes WHERE title LIKE ? OR body LIKE ? ORDER BY updated_at DESC',
+      'SELECT * FROM notes WHERE lower(title) LIKE ? OR lower(body) LIKE ? ORDER BY updated_at DESC',
       [q, q],
     );
     return rows.map(Note.fromMap).toList();
