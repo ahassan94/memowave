@@ -14,12 +14,21 @@ class NotesListScreen extends StatefulWidget {
 }
 
 class _NotesListScreenState extends State<NotesListScreen> {
+  final TextEditingController _searchCtl = TextEditingController();
+  bool _searching = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NotesProvider>().load();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchCtl.dispose();
+    super.dispose();
   }
 
   void _openEditor([Note? note]) {
@@ -32,7 +41,33 @@ class _NotesListScreenState extends State<NotesListScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<NotesProvider>();
     return Scaffold(
-      appBar: AppBar(title: const Text('memowave')),
+      appBar: AppBar(
+        title: _searching
+            ? TextField(
+                controller: _searchCtl,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Search notes...',
+                  border: InputBorder.none,
+                ),
+                onChanged: (v) => provider.setQuery(v),
+              )
+            : const Text('memowave'),
+        actions: [
+          IconButton(
+            icon: Icon(_searching ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                _searching = !_searching;
+                if (!_searching) {
+                  _searchCtl.clear();
+                  provider.setQuery('');
+                }
+              });
+            },
+          ),
+        ],
+      ),
       body: provider.loading && provider.notes.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -49,7 +84,10 @@ class _NotesListScreenState extends State<NotesListScreen> {
                   ),
                   direction: DismissDirection.endToStart,
                   onDismissed: (_) => provider.remove(n.id),
-                  child: NoteTile(note: n, onTap: () => _openEditor(n)),
+                  child: NoteTile(
+                    note: n,
+                    onTap: () => _openEditor(n),
+                  ),
                 );
               },
             ),
