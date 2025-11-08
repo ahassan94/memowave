@@ -17,7 +17,10 @@ class MemowaveApp extends StatelessWidget {
       create: (_) => NotesProvider(),
       child: MaterialApp(
         title: 'memowave',
-        theme: ThemeData(primarySwatch: Colors.indigo),
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+          useMaterial3: true,
+        ),
         home: const NotesListScreen(),
       ),
     );
