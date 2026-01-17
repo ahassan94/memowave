@@ -70,27 +70,29 @@ class _NotesListScreenState extends State<NotesListScreen> {
       ),
       body: provider.loading && provider.notes.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: provider.notes.length,
-              itemBuilder: (ctx, i) {
-                final n = provider.notes[i];
-                return Dismissible(
-                  key: ValueKey(n.id),
-                  background: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 16),
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (_) => provider.remove(n.id),
-                  child: NoteTile(
-                    note: n,
-                    onTap: () => _openEditor(n),
-                  ),
-                );
-              },
-            ),
+          : provider.notes.isEmpty
+              ? const Center(child: Text('No notes yet. Tap + to add one.'))
+              : ListView.builder(
+                  itemCount: provider.notes.length,
+                  itemBuilder: (ctx, i) {
+                    final n = provider.notes[i];
+                    return Dismissible(
+                      key: ValueKey(n.id),
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 16),
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (_) => provider.remove(n.id),
+                      child: NoteTile(
+                        note: n,
+                        onTap: () => _openEditor(n),
+                      ),
+                    );
+                  },
+                ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openEditor(),
         child: const Icon(Icons.add),
