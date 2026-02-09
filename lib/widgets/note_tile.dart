@@ -17,13 +17,29 @@ class NoteTile extends StatelessWidget {
         note.title.isEmpty ? '(untitled)' : note.title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontWeight: FontWeight.w600),
       ),
       subtitle: Text(
-        '[${note.category}] $preview',
+        preview,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Text(date, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(date, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          const SizedBox(height: 2),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(note.category, style: const TextStyle(fontSize: 10)),
+          ),
+        ],
+      ),
       onTap: onTap,
     );
   }
