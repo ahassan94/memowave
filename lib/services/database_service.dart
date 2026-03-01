@@ -96,4 +96,9 @@ class DatabaseService {
     final db = await database;
     await db.delete('notes', where: 'id = ?', whereArgs: [id]);
   }
+
+  // Testing hook: allow swapping in an in-memory ffi db.
+  static void setTestDatabase(Database db) {
+    _db = db;
+  }
 }
